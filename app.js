@@ -10,6 +10,12 @@ const logger       = require('morgan');
 const path         = require('path');
 const cors         = require('cors');
 
+const LocalStrategy = require('passport-local').Strategy;
+const session    = require('express-session');
+const passport     = require('passport');
+
+require('./config/passport');
+
 
 mongoose.Promise = Promise;
 mongoose
@@ -47,10 +53,23 @@ app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 
 
 
+app.use(session({
+  secret: 'super super secret shhhhhhh',
+  resave: true,
+  saveUninitialized: true
+}));
+      
+app.use(passport.initialize());
+app.use(passport.session());
+
+
 // default value for title local
 app.locals.title = 'Express - Generated with IronGenerator';
 
-app.use(cors());
+app.use(cors({
+  credentials: true,
+  origin: ['http://localhost:3000']
+}))
 
 const index = require('./routes/index');
 app.use('/', index);
